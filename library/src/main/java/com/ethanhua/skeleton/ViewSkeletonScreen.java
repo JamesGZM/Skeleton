@@ -99,12 +99,6 @@ public class ViewSkeletonScreen implements SkeletonScreen, LifecycleObserver {
     }
 
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    public void onPause() {
-        isViewShowing = false;
-        notifyAnimation();
-    }
-
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     public void onResume() {
         isViewShowing = true;

@@ -37,10 +37,6 @@ public class RecyclerViewSkeletonScreen implements SkeletonScreen, LifecycleObse
             builder.lifecycleRegistry.addObserver(this);
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    public void onPause() {
-        mSkeletonAdapter.setViewShowing(false);
-    }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     public void onResume() {
