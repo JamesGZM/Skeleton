@@ -1,5 +1,8 @@
 package com.ethanhua.skeleton;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.OnLifecycleEvent;
 import android.support.annotation.ArrayRes;
 import android.support.annotation.ColorRes;
 import android.support.annotation.IntRange;
@@ -11,7 +14,7 @@ import android.support.v7.widget.RecyclerView;
  * Created by ethanhua on 2017/7/29.
  */
 
-public class RecyclerViewSkeletonScreen implements SkeletonScreen {
+public class RecyclerViewSkeletonScreen implements SkeletonScreen, LifecycleObserver {
 
     private final RecyclerView mRecyclerView;
     private final RecyclerView.Adapter mActualAdapter;
@@ -30,6 +33,18 @@ public class RecyclerViewSkeletonScreen implements SkeletonScreen {
         mSkeletonAdapter.setShimmerAngle(builder.mShimmerAngle);
         mSkeletonAdapter.setShimmerDuration(builder.mShimmerDuration);
         mRecyclerViewFrozen = builder.mFrozen;
+        if (builder.lifecycleRegistry != null)
+            builder.lifecycleRegistry.addObserver(this);
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    public void onPause() {
+        mSkeletonAdapter.setViewShowing(false);
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    public void onResume() {
+        mSkeletonAdapter.setViewShowing(true);
     }
 
     @Override
@@ -56,10 +71,17 @@ public class RecyclerViewSkeletonScreen implements SkeletonScreen {
         private int mShimmerDuration = 1000;
         private int mShimmerAngle = 20;
         private boolean mFrozen = true;
+        private Lifecycle lifecycleRegistry;
 
         public Builder(RecyclerView recyclerView) {
             this.mRecyclerView = recyclerView;
             this.mShimmerColor = ContextCompat.getColor(recyclerView.getContext(), R.color.shimmer_color);
+        }
+
+
+        public Builder lifecycle(Lifecycle lifecycleRegistry) {
+            this.lifecycleRegistry = lifecycleRegistry;
+            return this;
         }
 
         /**

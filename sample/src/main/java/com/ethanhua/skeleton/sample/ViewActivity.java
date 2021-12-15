@@ -58,6 +58,7 @@ public class ViewActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         if (TYPE_VIEW.equals(mType)) {
             skeletonScreen = Skeleton.bind(rootView)
+                    .lifecycle(getLifecycle())
                     .load(R.layout.activity_view_skeleton)
                     .duration(1000)
                     .color(R.color.shimmer_color)
@@ -66,6 +67,7 @@ public class ViewActivity extends AppCompatActivity {
         }
         if (TYPE_IMG_LOADING.equals(mType)) {
             skeletonScreen = Skeleton.bind(rootView)
+                    .lifecycle(getLifecycle())
                     .load(R.layout.layout_img_skeleton)
                     .duration(1000)
                     .color(R.color.shimmer_color_for_image)

@@ -47,6 +47,7 @@ public class RecyclerViewActivity extends AppCompatActivity {
             recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
             NewsAdapter adapter = new NewsAdapter();
             final SkeletonScreen skeletonScreen = Skeleton.bind(recyclerView)
+                    .lifecycle(getLifecycle())
                     .adapter(adapter)
                     .shimmer(true)
                     .angle(20)
@@ -67,6 +68,7 @@ public class RecyclerViewActivity extends AppCompatActivity {
             recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
             PersonAdapter adapter = new PersonAdapter();
             final SkeletonScreen skeletonScreen = Skeleton.bind(recyclerView)
+                    .lifecycle(getLifecycle())
                     .adapter(adapter)
                     .load(R.layout.item_skeleton_person)
                     .shimmer(false)

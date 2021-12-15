@@ -1,5 +1,8 @@
 package com.ethanhua.skeleton;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.OnLifecycleEvent;
 import android.support.annotation.ColorRes;
 import android.support.annotation.IntRange;
 import android.support.annotation.LayoutRes;
@@ -16,7 +19,7 @@ import io.supercharge.shimmerlayout.ShimmerLayout;
  * Created by ethanhua on 2017/7/29.
  */
 
-public class ViewSkeletonScreen implements SkeletonScreen {
+public class ViewSkeletonScreen implements SkeletonScreen, LifecycleObserver {
     private static final String TAG = ViewSkeletonScreen.class.getName();
     private final ViewReplacer mViewReplacer;
     private final View mActualView;
@@ -26,6 +29,8 @@ public class ViewSkeletonScreen implements SkeletonScreen {
     private final int mShimmerDuration;
     private final int mShimmerAngle;
 
+    private boolean isViewShowing = false;
+
     private ViewSkeletonScreen(Builder builder) {
         mActualView = builder.mView;
         mSkeletonResID = builder.mSkeletonLayoutResID;
@@ -34,6 +39,8 @@ public class ViewSkeletonScreen implements SkeletonScreen {
         mShimmerAngle = builder.mShimmerAngle;
         mShimmerColor = builder.mShimmerColor;
         mViewReplacer = new ViewReplacer(builder.mView);
+        if (builder.lifecycleRegistry != null)
+            builder.lifecycleRegistry.addObserver(this);
     }
 
     private ShimmerLayout generateShimmerContainerLayout(ViewGroup parentView) {
@@ -47,18 +54,18 @@ public class ViewSkeletonScreen implements SkeletonScreen {
             shimmerLayout.setLayoutParams(lp);
         }
         shimmerLayout.addView(innerView);
-        shimmerLayout.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
-            @Override
-            public void onViewAttachedToWindow(View v) {
-                shimmerLayout.startShimmerAnimation();
-            }
-
-            @Override
-            public void onViewDetachedFromWindow(View v) {
-                shimmerLayout.stopShimmerAnimation();
-            }
-        });
-        shimmerLayout.startShimmerAnimation();
+//        shimmerLayout.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+//            @Override
+//            public void onViewAttachedToWindow(View v) {
+//                shimmerLayout.startShimmerAnimation();
+//            }
+//
+//            @Override
+//            public void onViewDetachedFromWindow(View v) {
+//                shimmerLayout.stopShimmerAnimation();
+//            }
+//        });
+        //shimmerLayout.startShimmerAnimation();
         return shimmerLayout;
     }
 
@@ -91,6 +98,33 @@ public class ViewSkeletonScreen implements SkeletonScreen {
         mViewReplacer.restore();
     }
 
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    public void onPause() {
+        isViewShowing = false;
+        notifyAnimation();
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    public void onResume() {
+        isViewShowing = true;
+        notifyAnimation();
+    }
+
+    private void notifyAnimation() {
+        if (mViewReplacer.getTargetView() instanceof ShimmerLayout) {
+            ShimmerLayout targetView = ((ShimmerLayout) mViewReplacer.getTargetView());
+            if (targetView == null) return;
+            if (isViewShowing) {
+                targetView.startShimmerAnimation();
+            } else {
+                targetView.stopShimmerAnimation();
+            }
+
+        }
+
+    }
+
     public static class Builder {
         private final View mView;
         private int mSkeletonLayoutResID;
@@ -98,10 +132,17 @@ public class ViewSkeletonScreen implements SkeletonScreen {
         private int mShimmerColor;
         private int mShimmerDuration = 1000;
         private int mShimmerAngle = 20;
+        private Lifecycle lifecycleRegistry;
 
         public Builder(View view) {
             this.mView = view;
             this.mShimmerColor = ContextCompat.getColor(mView.getContext(), R.color.shimmer_color);
+        }
+
+
+        public Builder lifecycle(Lifecycle lifecycleRegistry) {
+            this.lifecycleRegistry = lifecycleRegistry;
+            return this;
         }
 
         /**
