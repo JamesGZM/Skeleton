@@ -33,18 +33,19 @@ public class RecyclerViewSkeletonScreen implements SkeletonScreen, LifecycleObse
         mSkeletonAdapter.setShimmerAngle(builder.mShimmerAngle);
         mSkeletonAdapter.setShimmerDuration(builder.mShimmerDuration);
         mRecyclerViewFrozen = builder.mFrozen;
-        if (builder.lifecycleRegistry != null)
-            builder.lifecycleRegistry.addObserver(this);
+    }
+
+    private void bind(Lifecycle lifecycle) {
+        lifecycle.addObserver(this);
     }
 
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     public void onResume() {
-        mSkeletonAdapter.setViewShowing(true);
+        show();
     }
 
-    @Override
-    public void show() {
+    private void show() {
         mRecyclerView.setAdapter(mSkeletonAdapter);
         if (!mRecyclerView.isComputingLayout() && mRecyclerViewFrozen) {
             mRecyclerView.setLayoutFrozen(true);
@@ -67,17 +68,10 @@ public class RecyclerViewSkeletonScreen implements SkeletonScreen, LifecycleObse
         private int mShimmerDuration = 1000;
         private int mShimmerAngle = 20;
         private boolean mFrozen = true;
-        private Lifecycle lifecycleRegistry;
 
         public Builder(RecyclerView recyclerView) {
             this.mRecyclerView = recyclerView;
             this.mShimmerColor = ContextCompat.getColor(recyclerView.getContext(), R.color.shimmer_color);
-        }
-
-
-        public Builder lifecycle(Lifecycle lifecycleRegistry) {
-            this.lifecycleRegistry = lifecycleRegistry;
-            return this;
         }
 
         /**
@@ -156,10 +150,11 @@ public class RecyclerViewSkeletonScreen implements SkeletonScreen, LifecycleObse
             return this;
         }
 
-        public RecyclerViewSkeletonScreen show() {
-            RecyclerViewSkeletonScreen recyclerViewSkeleton = new RecyclerViewSkeletonScreen(this);
-            recyclerViewSkeleton.show();
-            return recyclerViewSkeleton;
+        public RecyclerViewSkeletonScreen bind(Lifecycle lifecycle) {
+            RecyclerViewSkeletonScreen skeletonScreen = new RecyclerViewSkeletonScreen(this);
+            skeletonScreen.bind(lifecycle);
+            return skeletonScreen;
         }
     }
+
 }

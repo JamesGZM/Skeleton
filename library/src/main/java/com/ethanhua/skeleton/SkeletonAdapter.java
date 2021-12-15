@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 import io.supercharge.shimmerlayout.ShimmerLayout;
 
 /**
@@ -20,7 +22,6 @@ public class SkeletonAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private boolean mShimmer;
     private int mShimmerDuration;
     private int mShimmerAngle;
-    private boolean isViewShowing = false;
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -36,14 +37,6 @@ public class SkeletonAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         };
     }
 
-    public boolean isViewShowing() {
-        return isViewShowing;
-    }
-
-    public void setViewShowing(boolean viewShowing) {
-        isViewShowing = viewShowing;
-        notifyDataSetChanged();
-    }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
@@ -52,14 +45,10 @@ public class SkeletonAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             layout.setShimmerAnimationDuration(mShimmerDuration);
             layout.setShimmerAngle(mShimmerAngle);
             layout.setShimmerColor(mColor);
-            if (isViewShowing) {
-                layout.startShimmerAnimation();
-            } else {
-                layout.stopShimmerAnimation();
-            }
-            //layout.startShimmerAnimation();
+            layout.startShimmerAnimation();
         }
     }
+
 
     @Override
     public int getItemViewType(int position) {
