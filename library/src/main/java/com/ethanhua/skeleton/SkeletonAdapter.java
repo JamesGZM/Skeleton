@@ -20,31 +20,20 @@ public class SkeletonAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private boolean mShimmer;
     private int mShimmerDuration;
     private int mShimmerAngle;
-    private boolean isViewShowing = false;
-    private final int SHOW = 1; //只是显示
-    private final int START = 2; //开始动画
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        if (viewType == SHOW) {
-            return new RecyclerView.ViewHolder(inflater.inflate(mLayoutReference, parent, false)) {
-            };
-        } else if (mShimmer && viewType == START) {
+        if (mShimmer) {
             return new ShimmerViewHolder(inflater, parent, mLayoutReference);
         }
         return new RecyclerView.ViewHolder(inflater.inflate(mLayoutReference, parent, false)) {
         };
     }
 
-    public void setViewShowing(boolean viewShowing) {
-        isViewShowing = viewShowing;
-        notifyDataSetChanged();
-    }
-
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (mShimmer && holder.getItemViewType() == START) {
+        if (mShimmer) {
             ShimmerLayout layout = (ShimmerLayout) holder.itemView;
             layout.setShimmerAnimationDuration(mShimmerDuration);
             layout.setShimmerAngle(mShimmerAngle);
@@ -53,10 +42,6 @@ public class SkeletonAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        return isViewShowing ? START : SHOW;
-    }
 
     @Override
     public long getItemId(int position) {

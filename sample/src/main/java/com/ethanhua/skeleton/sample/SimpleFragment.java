@@ -31,7 +31,6 @@ public class SimpleFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
         NewsAdapter adapter = new NewsAdapter();
         final SkeletonScreen skeletonScreen = Skeleton.bind(recyclerView)
-                .lifecycle(getLifecycle())
                 .adapter(adapter)
                 .shimmer(true)
                 .angle(20)
