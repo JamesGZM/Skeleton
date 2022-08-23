@@ -1,9 +1,10 @@
 package com.ethanhua.skeleton;
 
-import android.support.annotation.IntRange;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
+import androidx.annotation.IntRange;
+import androidx.recyclerview.widget.RecyclerView;
 
 import io.supercharge.shimmerlayout.ShimmerLayout;
 
@@ -15,29 +16,25 @@ public class SkeletonAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private int mItemCount;
     private int mLayoutReference;
-    private int[] mLayoutArrayReferences;
     private int mColor;
     private boolean mShimmer;
     private int mShimmerDuration;
     private int mShimmerAngle;
     private boolean isViewShowing = false;
+    private final int SHOW = 1; //只是显示
+    private final int START = 2; //开始动画
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        if (doesArrayOfLayoutsExist()) {
-            mLayoutReference = viewType;
-        }
-        if (mShimmer) {
+        if (viewType == SHOW) {
+            return new RecyclerView.ViewHolder(inflater.inflate(mLayoutReference, parent, false)) {
+            };
+        } else if (mShimmer && viewType == START) {
             return new ShimmerViewHolder(inflater, parent, mLayoutReference);
         }
-
         return new RecyclerView.ViewHolder(inflater.inflate(mLayoutReference, parent, false)) {
         };
-    }
-
-    public boolean isViewShowing() {
-        return isViewShowing;
     }
 
     public void setViewShowing(boolean viewShowing) {
@@ -47,26 +44,18 @@ public class SkeletonAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (mShimmer) {
+        if (mShimmer && holder.getItemViewType() == START) {
             ShimmerLayout layout = (ShimmerLayout) holder.itemView;
             layout.setShimmerAnimationDuration(mShimmerDuration);
             layout.setShimmerAngle(mShimmerAngle);
             layout.setShimmerColor(mColor);
-            if (isViewShowing) {
-                layout.startShimmerAnimation();
-            } else {
-                layout.stopShimmerAnimation();
-            }
-            //layout.startShimmerAnimation();
+            layout.startShimmerAnimation();
         }
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (doesArrayOfLayoutsExist()) {
-            return getCorrectLayoutItem(position);
-        }
-        return super.getItemViewType(position);
+        return isViewShowing ? START : SHOW;
     }
 
     @Override
@@ -81,10 +70,6 @@ public class SkeletonAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public void setLayoutReference(int layoutReference) {
         this.mLayoutReference = layoutReference;
-    }
-
-    public void setArrayOfLayoutReferences(int[] layoutReferences) {
-        this.mLayoutArrayReferences = layoutReferences;
     }
 
     public void setItemCount(int itemCount) {
@@ -107,14 +92,4 @@ public class SkeletonAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.mShimmerAngle = shimmerAngle;
     }
 
-    public int getCorrectLayoutItem(int position) {
-        if (doesArrayOfLayoutsExist()) {
-            return mLayoutArrayReferences[position % mLayoutArrayReferences.length];
-        }
-        return mLayoutReference;
-    }
-
-    private boolean doesArrayOfLayoutsExist() {
-        return mLayoutArrayReferences != null && mLayoutArrayReferences.length != 0;
-    }
 }

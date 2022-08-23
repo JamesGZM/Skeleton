@@ -2,8 +2,9 @@ package com.ethanhua.skeleton.sample;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,6 +28,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 ViewActivity.start(MainActivity.this, ViewActivity.TYPE_VIEW);
+            }
+        });
+        findViewById(R.id.btn_view_pager).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ViewPagerActivity.start(MainActivity.this);
             }
         });
         findViewById(R.id.btn_Imgloading).setOnClickListener(new View.OnClickListener() {
